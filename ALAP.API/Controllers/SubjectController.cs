@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ALAP.API.DTO;
+using ALAP.API.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,16 +13,19 @@ namespace ALAP.API.Controllers
     [ApiController]
     public class SubjectController : ControllerBase
     {
-        //private readonly IRegisterService _registerRepo;
+        private readonly ISubjectService _subjectRepo;
 
-        //public RegisterController(IRegisterService registerRepo)
-        //{
-        //    _registerRepo = registerRepo;
-        //}
-        [HttpPost]
+        public SubjectController(ISubjectService subjectRepo)
+        {
+            _subjectRepo = subjectRepo;
+        }
+
+
+        [Route("getSubjects")]
+        [HttpGet]
         public async Task<ActionResult<List<Subjects>>> GetAllSubjects()
         {
-            await Task.Delay(1000);
+            return await _subjectRepo.GetAllSubjects();
         }
     }
 }
