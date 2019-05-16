@@ -31,6 +31,7 @@ namespace ALAP.API
             services.AddTransient<ILoginService, LoginRepository>();
             services.AddTransient<IRegisterService, RegisterRepository>();
             services.AddTransient<ISubjectService, SubjectRepository>();
+            services.AddTransient<IUserService, UserRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 

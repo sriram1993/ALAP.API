@@ -13,5 +13,7 @@ namespace ALAP.API.DTO
 
         public string Module { get; set; }
 
+        public bool isSelected { get; set; }
+
     }
 }
