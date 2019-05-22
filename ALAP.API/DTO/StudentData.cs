@@ -13,6 +13,12 @@ namespace ALAP.API.DTO
 
         public int MatriculationNumber { get; set; }
 
+        public int StudentID { get; set; }
+
         public List<Subjects> subjects { get; set; }
+
+        public Transcript transcript { get; set; }
+
+        public bool isUpdate { get; set; }
     }
 }

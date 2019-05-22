@@ -6,6 +6,7 @@ using ALAP.API.DTO;
 using ALAP.API.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static ALAP.API.DTO.Enum;
 
 namespace ALAP.API.Controllers
 {
@@ -32,6 +33,38 @@ namespace ALAP.API.Controllers
             else
             {
                 return StatusCode(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("getStudentRequestData")]
+        public async Task<IActionResult> GetStudentRequestData(string type="all")
+        {
+            List<StudentData> studData = await _userRepo.GetStudentRequestData(type);
+            if (studData != null)
+            {
+                return Ok(studData);
+            }
+            else
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPost]
+        [Route("saveStudentData")]
+        public async Task<IActionResult> SaveStudentData([FromBody]StudentData studentData)
+        {
+            SaveStatus status = await _userRepo.SaveStudentData(studentData);
+
+            switch (status)
+            {
+                case SaveStatus.Success:
+                    return Ok();
+
+                default:
+                    return StatusCode(500);
+
             }
         }
     }

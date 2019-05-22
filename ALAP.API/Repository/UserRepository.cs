@@ -8,6 +8,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using static ALAP.API.DTO.Enum;
 
 namespace ALAP.API.Repository
 {
@@ -46,6 +47,7 @@ namespace ALAP.API.Repository
 
                     StudentData studObj = results.Read<StudentData>().FirstOrDefault();
                     studObj.subjects = results.Read<Subjects>().ToList();
+                    studObj.transcript = results.Read<Transcript>().FirstOrDefault();
                     return studObj;
                 }
 
@@ -53,6 +55,89 @@ namespace ALAP.API.Repository
             catch(Exception e)
             {
                 return null;
+            }
+        }
+
+        public async Task<List<StudentData>> GetStudentRequestData(string type)
+        {
+            try
+            {
+                using (IDbConnection conn = Connection)
+                {
+                    var param = new DynamicParameters();
+                    param.Add("@Type", type, DbType.String, direction: ParameterDirection.Input);
+                    Dictionary<int, StudentData> dicStudentData = new Dictionary<int, StudentData>();
+
+                    var results = await conn.QueryAsync<StudentData, Subjects, StudentData>(
+                        "usp_GetStudentRequestData",
+                        (studentData, subjects) =>
+                        {
+                            StudentData stud;
+
+                            if(!dicStudentData.TryGetValue(studentData.MatriculationNumber,out stud))
+                            {
+                                stud = studentData;
+                                stud.subjects = new List<Subjects>();
+                                dicStudentData.Add(stud.MatriculationNumber, stud);
+                            }
+
+                            stud.subjects.Add(subjects);
+                            return stud;
+                        },
+                        splitOn: "SubjectID"
+                        );
+
+                    List<StudentData> resultObj = dicStudentData.Values.ToList();
+                    return resultObj;
+                }
+
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+
+        }
+
+        /// <summary>
+        /// Save Student Data
+        /// </summary>
+        /// <param name="studentData"></param>
+        /// <returns></returns>
+        public async Task<SaveStatus> SaveStudentData(StudentData studentData)
+        {
+            try
+            {
+                DataTable dtSubjects = new DataTable();
+                dtSubjects.Columns.Add("SubjectID", typeof(int));
+                dtSubjects.Columns.Add("SubjectName", typeof(string));
+                dtSubjects.Columns.Add("IsSelected", typeof(bool));
+
+                foreach(var subject in studentData.subjects)
+                {
+                    dtSubjects.Rows.Add(subject.SubjectID, subject.SubjectName, subject.isSelected);
+                }
+
+                using (IDbConnection conn = Connection)
+                {
+                    var param = new DynamicParameters();
+                    param.Add("@StudentID", studentData.StudentID, DbType.String, direction: ParameterDirection.Input);
+                    param.Add("@IsUpdate", studentData.isUpdate, DbType.Boolean, direction: ParameterDirection.Input);
+                    param.Add("@TranscriptFileData", studentData.transcript.FileData, DbType.String, direction: ParameterDirection.Input);
+                    param.Add("@TranscriptFileName", studentData.transcript.FileName, DbType.String, direction: ParameterDirection.Input);
+                    param.Add("@subject", dtSubjects.AsTableValuedParameter("dbo.Subject"));
+                    param.Add("@ReturnValue", DbType.Int32, direction: ParameterDirection.ReturnValue);
+
+                    await conn.ExecuteAsync("usp_SaveOrUpdateLearningAgreement", param, commandType: CommandType.StoredProcedure);
+
+                    var retValue = param.Get<int>("@ReturnValue");
+                    SaveStatus status = (SaveStatus)retValue;
+                    return status;
+                }
+            }
+            catch(Exception e)
+            {
+                return SaveStatus.Failure;
             }
         }
     }

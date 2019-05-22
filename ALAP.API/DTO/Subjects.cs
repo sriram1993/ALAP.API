@@ -9,6 +9,8 @@ namespace ALAP.API.DTO
     {
         public int SubjectID { get; set; }
 
+        public int SubjectMappingID { get; set; }
+
         public string SubjectName { get; set; }
 
         public string Module { get; set; }
