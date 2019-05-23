@@ -112,16 +112,17 @@ namespace ALAP.API.Repository
                 dtSubjects.Columns.Add("SubjectID", typeof(int));
                 dtSubjects.Columns.Add("SubjectName", typeof(string));
                 dtSubjects.Columns.Add("IsSelected", typeof(bool));
+                dtSubjects.Columns.Add("SubjectMappingID", typeof(int));
 
                 foreach(var subject in studentData.subjects)
                 {
-                    dtSubjects.Rows.Add(subject.SubjectID, subject.SubjectName, subject.isSelected);
+                    dtSubjects.Rows.Add(subject.SubjectID, subject.SubjectName, subject.isSelected,subject.SubjectMappingID);
                 }
 
                 using (IDbConnection conn = Connection)
                 {
                     var param = new DynamicParameters();
-                    param.Add("@StudentID", studentData.StudentID, DbType.String, direction: ParameterDirection.Input);
+                    param.Add("@StudentID", studentData.StudentID, DbType.Int32, direction: ParameterDirection.Input);
                     param.Add("@IsUpdate", studentData.isUpdate, DbType.Boolean, direction: ParameterDirection.Input);
                     param.Add("@TranscriptFileData", studentData.transcript.FileData, DbType.String, direction: ParameterDirection.Input);
                     param.Add("@TranscriptFileName", studentData.transcript.FileName, DbType.String, direction: ParameterDirection.Input);
@@ -133,6 +134,49 @@ namespace ALAP.API.Repository
                     var retValue = param.Get<int>("@ReturnValue");
                     SaveStatus status = (SaveStatus)retValue;
                     return status;
+                }
+            }
+            catch(Exception e)
+            {
+                return SaveStatus.Failure;
+            }
+
+        }
+
+        /// <summary>
+        /// Method to Approve the Learning Agreement
+        /// </summary>
+        /// <param name="studentData"></param>
+        /// <returns></returns>
+        public async Task<SaveStatus> ApproveRequest(StudentData studentData)
+        {
+            try
+            {
+                DataTable dtSubjects = new DataTable();
+                dtSubjects.Columns.Add("SubjectID", typeof(int));
+                dtSubjects.Columns.Add("SubjectName", typeof(string));
+                dtSubjects.Columns.Add("IsSelected", typeof(bool));
+                dtSubjects.Columns.Add("SubjectMappingID", typeof(int));
+
+                foreach (var subject in studentData.subjects)
+                {
+                    dtSubjects.Rows.Add(subject.SubjectID, subject.SubjectName, subject.isSelected, subject.SubjectMappingID);
+                }
+
+                using (IDbConnection conn = Connection)
+                {
+                    var param = new DynamicParameters();
+
+                    param.Add("@StudentID", studentData.StudentID, DbType.Int32, direction: ParameterDirection.Input );
+                    param.Add("@subject", dtSubjects.AsTableValuedParameter("dbo.Subject"));
+                    param.Add("@ReturnValue", DbType.Int32, direction: ParameterDirection.ReturnValue);
+
+                    await conn.ExecuteAsync("usp_ApproveLearningAgreement", param, commandType: CommandType.StoredProcedure);
+
+                    var retValue = param.Get<int>("@ReturnValue");
+                    SaveStatus status = (SaveStatus)retValue;
+                    return status;
+
                 }
             }
             catch(Exception e)

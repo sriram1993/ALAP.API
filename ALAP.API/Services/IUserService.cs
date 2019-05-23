@@ -14,5 +14,7 @@ namespace ALAP.API.Services
         Task<List<StudentData>> GetStudentRequestData(string type);
 
         Task<SaveStatus> SaveStudentData(StudentData studentData);
+
+        Task<SaveStatus> ApproveRequest(StudentData studentData);
     }
 }
