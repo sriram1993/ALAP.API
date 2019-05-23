@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using ALAP.API.DTO;
 using ALAP.API.Services;
 using ALAP.API.Utilities;
-using IronOcr;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static ALAP.API.DTO.Enum;
