@@ -17,6 +17,8 @@ namespace ALAP.API
 {
     public class Startup
     {
+        private string MyPolicy = "myPolicy";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -43,7 +45,8 @@ namespace ALAP.API
 
             services.AddCors(c =>
             {
-                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+                //c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+                c.AddPolicy(MyPolicy, builder => builder.AllowAnyOrigin().AllowAnyHeader());
             });
         }
 
@@ -60,7 +63,7 @@ namespace ALAP.API
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "ALAP API V1");
             });
 
-            app.UseCors(options => options.AllowAnyOrigin());
+            app.UseCors(MyPolicy);
 
             if (env.IsDevelopment())
             {
