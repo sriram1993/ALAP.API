@@ -20,5 +20,7 @@ namespace ALAP.API.DTO
         public Transcript transcript { get; set; }
 
         public bool isUpdate { get; set; }
+
+        public bool isLearningAgreementApproved { get; set; }
     }
 }

@@ -8,6 +8,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using static ALAP.API.DTO.Enum;
 
 namespace ALAP.API.Repository
 {
@@ -46,6 +47,62 @@ namespace ALAP.API.Repository
             catch (Exception e)
             {
                 return null;
+            }
+        }
+
+        public async Task<SaveStatus> AddSubject(Subjects subject)
+        {
+            try
+            {
+                //await Task.Delay(1000);
+                using (IDbConnection conn = Connection)
+                {
+                    var param = new DynamicParameters();
+                    param.Add("@SubjectName", subject.SubjectName, DbType.String, direction: ParameterDirection.Input);
+                    param.Add("@Module", subject.Module, DbType.String, direction: ParameterDirection.Input);
+                    param.Add("@ReturnValue", DbType.Int32, direction: ParameterDirection.ReturnValue);
+
+
+                    await conn.ExecuteAsync("usp_AddSubject", param, commandType: CommandType.StoredProcedure);
+
+                    var retValue = param.Get<int>("@ReturnValue");
+                    SaveStatus status = (SaveStatus)retValue;
+                    return status;
+
+                }
+            }
+            catch (Exception e)
+            {
+                return SaveStatus.Failure;
+            }
+        }
+
+        public async Task<SaveStatus> UpdateSubject(Subjects subject)
+        {
+            try
+            {
+                //await Task.Delay(1000);
+                using (IDbConnection conn = Connection)
+                {
+                    var param = new DynamicParameters();
+                    param.Add("@SubjectID", subject.SubjectID, DbType.Int32, direction: ParameterDirection.Input);
+                    param.Add("@SubjectName", subject.SubjectName, DbType.String, direction: ParameterDirection.Input);
+                    param.Add("@Module", subject.Module, DbType.String, direction: ParameterDirection.Input);
+                    param.Add("@IsActive", subject.isSelected, DbType.Boolean, direction: ParameterDirection.Input);
+                    param.Add("@ReturnValue", DbType.Int32, direction: ParameterDirection.ReturnValue);
+
+
+                    await conn.ExecuteAsync("usp_UpdateSubject", param, commandType: CommandType.StoredProcedure);
+
+                    var retValue = param.Get<int>("@ReturnValue");
+                    SaveStatus status = (SaveStatus)retValue;
+                    return status;
+
+                }
+            }
+            catch (Exception e)
+            {
+                return SaveStatus.Failure;
             }
         }
     }

@@ -17,5 +17,7 @@ namespace ALAP.API.DTO
 
         public bool isSelected { get; set; }
 
+        public bool isRejectedByAdmin { get; set; }
+
     }
 }

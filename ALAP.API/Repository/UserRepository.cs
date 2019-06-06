@@ -84,6 +84,8 @@ namespace ALAP.API.Repository
                             stud.subjects.Add(subjects);
                             return stud;
                         },
+                         param,
+                         commandType: CommandType.StoredProcedure,
                         splitOn: "SubjectID"
                         );
 
@@ -113,10 +115,11 @@ namespace ALAP.API.Repository
                 dtSubjects.Columns.Add("SubjectName", typeof(string));
                 dtSubjects.Columns.Add("IsSelected", typeof(bool));
                 dtSubjects.Columns.Add("SubjectMappingID", typeof(int));
+                dtSubjects.Columns.Add("IsRejectedByAdmin", typeof(bool));
 
-                foreach(var subject in studentData.subjects)
+                foreach (var subject in studentData.subjects)
                 {
-                    dtSubjects.Rows.Add(subject.SubjectID, subject.SubjectName, subject.isSelected,subject.SubjectMappingID);
+                    dtSubjects.Rows.Add(subject.SubjectID, subject.SubjectName, subject.isSelected,subject.SubjectMappingID, subject.isRejectedByAdmin);
                 }
 
                 using (IDbConnection conn = Connection)
@@ -157,10 +160,11 @@ namespace ALAP.API.Repository
                 dtSubjects.Columns.Add("SubjectName", typeof(string));
                 dtSubjects.Columns.Add("IsSelected", typeof(bool));
                 dtSubjects.Columns.Add("SubjectMappingID", typeof(int));
+                dtSubjects.Columns.Add("IsRejectedByAdmin", typeof(bool));
 
                 foreach (var subject in studentData.subjects)
                 {
-                    dtSubjects.Rows.Add(subject.SubjectID, subject.SubjectName, subject.isSelected, subject.SubjectMappingID);
+                    dtSubjects.Rows.Add(subject.SubjectID, subject.SubjectName, subject.isSelected, subject.SubjectMappingID,subject.isRejectedByAdmin);
                 }
 
                 using (IDbConnection conn = Connection)
