@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ALAP.API.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ALAP.API.Controllers
@@ -40,6 +41,21 @@ namespace ALAP.API.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+        }
+
+        [HttpGet]
+        [Route("/getUser")]
+        public async Task<IActionResult> GetUser()
+        {
+            await Task.Delay(1000);
+            User user = new User();
+            user.id = "123asd2asd2easdas";
+            user.email = "sriram.murali@coduct.com";
+            user.name = "Sriram Murali";
+            user.role = new Role();
+            user.role.name = "administrator";
+
+            return Ok(user);
         }
     }
 }

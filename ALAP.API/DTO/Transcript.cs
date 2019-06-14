@@ -10,5 +10,7 @@ namespace ALAP.API.DTO
         public string FileData { get; set; }
 
         public string FileName { get; set; }
+
+        public string OcrJson { get; set; }
     }
 }

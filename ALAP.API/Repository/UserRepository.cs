@@ -129,6 +129,7 @@ namespace ALAP.API.Repository
                     param.Add("@IsUpdate", studentData.isUpdate, DbType.Boolean, direction: ParameterDirection.Input);
                     param.Add("@TranscriptFileData", studentData.transcript.FileData, DbType.String, direction: ParameterDirection.Input);
                     param.Add("@TranscriptFileName", studentData.transcript.FileName, DbType.String, direction: ParameterDirection.Input);
+                    param.Add("@OcrJson", studentData.transcript.OcrJson, DbType.String, direction: ParameterDirection.Input);
                     param.Add("@subject", dtSubjects.AsTableValuedParameter("dbo.Subject"));
                     param.Add("@ReturnValue", DbType.Int32, direction: ParameterDirection.ReturnValue);
 
